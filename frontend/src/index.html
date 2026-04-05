@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitLurker</title>
+    <meta
+      name="description"
+      content="Passive index of open-source GitHub activity on Nostr."
+    />
+
+    <meta property="og:type" content="website" />
+    <meta id="meta-og-title" property="og:title" content="GitLurker" />
+    <meta
+      id="meta-og-desc"
+      property="og:description"
+      content="Passive index of open-source GitHub activity on Nostr."
+    />
+    <meta id="meta-og-url" property="og:url" content="" />
+    <meta property="og:image" content="/og-image.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta id="meta-tw-title" name="twitter:title" content="GitLurker" />
+    <meta
+      id="meta-tw-desc"
+      name="twitter:description"
+      content="Passive index of open-source GitHub activity on Nostr."
+    />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <script type="application/ld+json" id="jsonld-placeholder">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "GitLurker",
+        "description": "Project index over Nostr"
+      }
+    </script>
+
+    <link rel="icon" href="/og-image.png" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="site-header">
+        <nav class="nav-bar" aria-label="Primary">
+          <a class="brand" data-spa href="/">
+            <img
+              class="brand-logo"
+              src="/og-image.png"
+              width="36"
+              height="36"
+              alt=""
+            />
+            <span class="brand-title">GitLurker</span>
+          </a>
+          <div class="nav-links">
+            <a data-spa href="/">Home</a>
+            <a data-spa href="/about">About</a>
+          </div>
+          <div id="theme-slot" class="theme-slot"></div>
+        </nav>
+      </header>
+
+      <main id="main-outlet" class="main-outlet"></main>
+
+      <footer class="site-footer">
+        <p class="muted">
+          Data from Nostr relays and GitHub. Not affiliated with GitHub.
+        </p>
+      </footer>
+    </div>
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

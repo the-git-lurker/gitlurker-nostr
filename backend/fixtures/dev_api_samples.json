@@ -1,0 +1,348 @@
+{
+  "owners": {
+    "demo-org": {
+      "repos": [
+        {
+          "name": "sample-repo",
+          "full_name": "demo-org/sample-repo",
+          "description": "Demo repository for UI review.",
+          "html_url": "https://github.com/demo-org/sample-repo",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-03-20T12:00:00Z"
+        },
+        {
+          "name": "legacy-app",
+          "full_name": "demo-org/legacy-app",
+          "description": "",
+          "html_url": "https://github.com/demo-org/legacy-app",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2024-01-15T08:00:00Z"
+        },
+        {
+          "name": "stale-repo",
+          "full_name": "demo-org/stale-repo",
+          "description": "Fixture stale row target",
+          "html_url": "https://github.com/demo-org/stale-repo",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2025-01-01T00:00:00Z"
+        },
+        {
+          "name": "skills-demo",
+          "full_name": "demo-org/skills-demo",
+          "description": "AI skills icon sample",
+          "html_url": "https://github.com/demo-org/skills-demo",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-03-10T00:00:00Z"
+        },
+        {
+          "name": "mcp-server",
+          "full_name": "demo-org/mcp-server",
+          "description": "MCP Tools — fixture for AI / MCP subcategory and release page.",
+          "html_url": "https://github.com/demo-org/mcp-server",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-03-27T15:30:00Z"
+        }
+      ],
+      "members": [
+        {
+          "login": "alice",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1?v=4",
+          "html_url": "https://github.com/alice"
+        },
+        {
+          "login": "bob",
+          "avatar_url": "https://avatars.githubusercontent.com/u/2?v=4",
+          "html_url": "https://github.com/bob"
+        }
+      ],
+      "teams": [
+        {
+          "name": "Core",
+          "slug": "core",
+          "description": "Core maintainers",
+          "html_url": "https://github.com/orgs/demo-org/teams/core"
+        }
+      ],
+      "github_url": "https://github.com/demo-org"
+    },
+    "nostr": {
+      "repos": [
+        {
+          "name": "ndk",
+          "full_name": "nostr/ndk",
+          "description": "Nostr dev kit",
+          "html_url": "https://github.com/nostr/ndk",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-03-21T00:00:00Z"
+        }
+      ],
+      "members": [],
+      "teams": [],
+      "github_url": "https://github.com/nostr"
+    },
+    "acme": {
+      "repos": [
+        {
+          "name": "layer-node",
+          "full_name": "acme/layer-node",
+          "description": "Layer2 node",
+          "html_url": "https://github.com/acme/layer-node",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-01-10T00:00:00Z"
+        }
+      ],
+      "members": [],
+      "teams": [],
+      "github_url": "https://github.com/acme"
+    },
+    "another-org": {
+      "repos": [
+        {
+          "name": "widget-app",
+          "full_name": "another-org/widget-app",
+          "description": "UI widgets — exercise owner repo table + long version strings.",
+          "html_url": "https://github.com/another-org/widget-app",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-03-24T09:00:00Z"
+        },
+        {
+          "name": "payment-kit",
+          "full_name": "another-org/payment-kit",
+          "description": "Bitcoin payments SDK (beta channel).",
+          "html_url": "https://github.com/another-org/payment-kit",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-03-17T18:45:00Z"
+        },
+        {
+          "name": "infra-tools",
+          "full_name": "another-org/infra-tools",
+          "description": "Internal tooling — listed on owner page only (no home dummy row).",
+          "html_url": "https://github.com/another-org/infra-tools",
+          "private": false,
+          "fork": false,
+          "pushed_at_iso": "2026-02-01T11:00:00Z"
+        }
+      ],
+      "members": [
+        {
+          "login": "carol",
+          "avatar_url": "https://avatars.githubusercontent.com/u/3?v=4",
+          "html_url": "https://github.com/carol"
+        }
+      ],
+      "teams": [
+        {
+          "name": "Payments",
+          "slug": "payments",
+          "description": "Payment integrations",
+          "html_url": "https://github.com/orgs/another-org/teams/payments"
+        }
+      ],
+      "github_url": "https://github.com/another-org"
+    }
+  },
+  "repos": {
+    "demo-org/sample-repo": {
+      "description": "Demo repository for GitLurker local review.",
+      "stars": 42,
+      "forks": 7,
+      "issues": 3,
+      "contributors": [
+        {
+          "login": "alice",
+          "name": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1?v=4",
+          "contributions": 120,
+          "html_url": "https://github.com/alice"
+        },
+        {
+          "login": "bob",
+          "name": "Bob",
+          "avatar_url": "https://avatars.githubusercontent.com/u/2?v=4",
+          "contributions": 45,
+          "html_url": "https://github.com/bob"
+        }
+      ],
+      "github_url": "https://github.com/demo-org/sample-repo"
+    },
+    "demo-org/legacy-app": {
+      "description": "Older demo app.",
+      "stars": 5,
+      "forks": 1,
+      "issues": 0,
+      "contributors": [],
+      "github_url": "https://github.com/demo-org/legacy-app"
+    },
+    "demo-org/stale-repo": {
+      "description": "Stale listing fixture.",
+      "stars": 0,
+      "forks": 0,
+      "issues": 0,
+      "contributors": [],
+      "github_url": "https://github.com/demo-org/stale-repo"
+    },
+    "demo-org/skills-demo": {
+      "description": "Skills subcategory demo.",
+      "stars": 1,
+      "forks": 0,
+      "issues": 0,
+      "contributors": [],
+      "github_url": "https://github.com/demo-org/skills-demo"
+    },
+    "nostr/ndk": {
+      "description": "Nostr development kit.",
+      "stars": 100,
+      "forks": 20,
+      "issues": 5,
+      "contributors": [],
+      "github_url": "https://github.com/nostr/ndk"
+    },
+    "acme/layer-node": {
+      "description": "Layer2 node sample.",
+      "stars": 8,
+      "forks": 1,
+      "issues": 0,
+      "contributors": [],
+      "github_url": "https://github.com/acme/layer-node"
+    },
+    "demo-org/mcp-server": {
+      "description": "MCP server with tool listings, auth plugins, and JSON-schema prompts for agents.",
+      "stars": 24,
+      "forks": 4,
+      "issues": 2,
+      "contributors": [
+        {
+          "login": "alice",
+          "name": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1?v=4",
+          "contributions": 80,
+          "html_url": "https://github.com/alice"
+        }
+      ],
+      "github_url": "https://github.com/demo-org/mcp-server"
+    },
+    "another-org/widget-app": {
+      "description": "Cross-platform widget kit used by several downstream apps.",
+      "stars": 15,
+      "forks": 3,
+      "issues": 1,
+      "contributors": [
+        {
+          "login": "carol",
+          "name": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/3?v=4",
+          "contributions": 200,
+          "html_url": "https://github.com/carol"
+        }
+      ],
+      "github_url": "https://github.com/another-org/widget-app"
+    },
+    "another-org/payment-kit": {
+      "description": "Lightning and on-chain payment helpers for merchant dashboards.",
+      "stars": 99,
+      "forks": 11,
+      "issues": 6,
+      "contributors": [],
+      "github_url": "https://github.com/another-org/payment-kit"
+    },
+    "another-org/infra-tools": {
+      "description": "CI and deploy scripts shared across another-org repositories.",
+      "stars": 3,
+      "forks": 1,
+      "issues": 0,
+      "contributors": [],
+      "github_url": "https://github.com/another-org/infra-tools"
+    }
+  },
+  "releases": {
+    "demo-org/sample-repo": {
+      "version": "v1.2.0",
+      "date": "2026-03-18T10:00:00Z",
+      "publisher": "alice",
+      "notes_html": "<h2>Demo release</h2><p>Fixture release notes for local testing.</p>",
+      "github_url": "https://github.com/demo-org/sample-repo/releases/tag/v1.2.0",
+      "commit_sha_short": ""
+    },
+    "demo-org/legacy-app": {
+      "version": "Latest commit",
+      "date": "2024-01-15T08:00:00Z",
+      "publisher": "legacy-bot",
+      "notes_html": "<h1>README</h1><p>Fixture README rendered as HTML for commit-only project.</p>",
+      "github_url": "https://github.com/demo-org/legacy-app",
+      "commit_sha_short": "deadbeef"
+    },
+    "demo-org/stale-repo": {
+      "version": "Latest commit",
+      "date": "2025-01-01T00:00:00Z",
+      "publisher": "bot",
+      "notes_html": "<p>Stale repo fixture README.</p>",
+      "github_url": "https://github.com/demo-org/stale-repo",
+      "commit_sha_short": "abc1234"
+    },
+    "demo-org/skills-demo": {
+      "version": "Latest commit",
+      "date": "2026-03-10T00:00:00Z",
+      "publisher": "dev",
+      "notes_html": "",
+      "github_url": "https://github.com/demo-org/skills-demo",
+      "commit_sha_short": "1111111"
+    },
+    "nostr/ndk": {
+      "version": "2.0.0",
+      "date": "2026-03-19T12:00:00Z",
+      "publisher": "maintainer",
+      "notes_html": "<p>NDK release notes fixture.</p>",
+      "github_url": "https://github.com/nostr/ndk/releases/tag/v2.0.0",
+      "commit_sha_short": ""
+    },
+    "acme/layer-node": {
+      "version": "0.5.1",
+      "date": "2026-01-10T00:00:00Z",
+      "publisher": "",
+      "notes_html": "<p>Layer node release.</p>",
+      "github_url": "https://github.com/acme/layer-node",
+      "commit_sha_short": ""
+    },
+    "demo-org/mcp-server": {
+      "version": "mcp-tools@0.8.0",
+      "date": "2026-03-27T14:00:00Z",
+      "publisher": "alice",
+      "notes_html": "<h2>MCP Tools 0.8</h2><ul><li>New <code>search_repo</code> tool</li><li>OAuth2 refresh for GitHub-backed tools</li></ul>",
+      "github_url": "https://github.com/demo-org/mcp-server/releases/tag/mcp-tools%400.8.0",
+      "commit_sha_short": ""
+    },
+    "another-org/widget-app": {
+      "version": "2026.3.1+fcs",
+      "date": "2026-03-24T08:00:00Z",
+      "publisher": "carol",
+      "notes_html": "<h3>Widget app</h3><p>Long <strong>version string</strong> in the header; tables and lists for UI review.</p><pre>changelog: breaking Theme API</pre>",
+      "github_url": "https://github.com/another-org/widget-app/releases/tag/v2026.3.1",
+      "commit_sha_short": ""
+    },
+    "another-org/payment-kit": {
+      "version": "v12.0.0-beta.2",
+      "date": "2026-03-17T12:00:00Z",
+      "publisher": "release-bot",
+      "notes_html": "<p>Beta channel: improved fee estimation and <em>testnet</em> defaults.</p>",
+      "github_url": "https://github.com/another-org/payment-kit/releases/tag/v12.0.0-beta.2",
+      "commit_sha_short": ""
+    },
+    "another-org/infra-tools": {
+      "version": "Latest commit",
+      "date": "2026-02-01T10:00:00Z",
+      "publisher": "devops",
+      "notes_html": "<p>README-style fixture for a repo without a formal release tag.</p>",
+      "github_url": "https://github.com/another-org/infra-tools",
+      "commit_sha_short": "c0ffee1"
+    }
+  }
+}
