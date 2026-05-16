@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   filterProjectsByCategory,
   filterProjectsBySearch,
+  filterProjectsBySubcategory,
 } from "./filters.js";
 
 const sample = [
@@ -61,6 +62,18 @@ describe("filterProjectsByCategory", () => {
 
   it("filters by category", () => {
     const out = filterProjectsByCategory(sample, "bitcoin");
+    expect(out).toHaveLength(1);
+    expect(out[0].repo).toBe("bitcoin");
+  });
+});
+
+describe("filterProjectsBySubcategory", () => {
+  it("returns all for all", () => {
+    expect(filterProjectsBySubcategory(sample, "all")).toHaveLength(2);
+  });
+
+  it("filters by subcategory", () => {
+    const out = filterProjectsBySubcategory(sample, "node");
     expect(out).toHaveLength(1);
     expect(out[0].repo).toBe("bitcoin");
   });

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import json
 from collections.abc import Callable
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -352,7 +354,8 @@ async def test_get_repo_summary_non_json_body() -> None:
 
 
 @pytest.mark.asyncio
-async def test_429_retries_then_success() -> None:
+async def test_429_retries_then_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
     calls = {"n": 0}
     release_json = {
         "tag_name": "v1",
@@ -388,6 +391,39 @@ async def test_429_retries_then_success() -> None:
         assert calls["n"] == 2
         assert out.data is not None
         assert out.data.version == "v1"
+    finally:
+        await svc.aclose()
+
+
+@pytest.mark.asyncio
+async def test_get_repo_summary_retries_502_then_ok(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+    calls = {"n": 0}
+
+    def route(request: httpx.Request) -> httpx.Response:
+        if request.url.path != "/repos/o/r":
+            return httpx.Response(404)
+        calls["n"] += 1
+        if calls["n"] < 2:
+            return httpx.Response(502)
+        return _json_response(
+            {
+                "description": "Hello",
+                "stargazers_count": 1,
+                "forks_count": 0,
+                "open_issues_count": 0,
+                "html_url": "https://github.com/o/r",
+                "default_branch": "main",
+                "full_name": "o/r",
+            },
+        )
+
+    svc = GitHubService("token", transport=make_transport(route))
+    try:
+        out = await svc.get_repo_summary("o", "r")
+        assert calls["n"] == 2
+        assert out.data is not None
+        assert out.data.stars == 1
     finally:
         await svc.aclose()
 

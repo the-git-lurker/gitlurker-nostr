@@ -47,6 +47,9 @@ logger = logging.getLogger(__name__)
 KIND_PROJECT = Kind(30078)
 KIND_GIFT_WRAP = Kind.from_std(KindStandard.GIFT_WRAP)
 
+# Public site linked from Kind 1 release announcements (legacy gitlurker.info format).
+GITLURKER_PUBLIC_URL = "https://www.gitlurker.openlibrarian.com"
+
 
 def project_d_tag(owner: str, repo: str) -> str:
     """`d` tag for Kind 30078 (stable per owner/repo)."""
@@ -116,19 +119,49 @@ def kind10003_coordinate_count(coordinates: list[Coordinate]) -> int:
     return len(coordinates)
 
 
+def _format_published_at_utc(published_at_iso: str) -> str:
+    """Match legacy notes: ISO timestamp with a trailing ``UTC`` label."""
+    s = published_at_iso.strip()
+    if not s:
+        return "—"
+    if s.upper().endswith(" UTC"):
+        return s
+    if s.endswith("Z"):
+        return f"{s[:-1]} UTC"
+    return f"{s} UTC"
+
+
+def _announcement_details_url(data: ReleaseAnnouncementInput) -> str:
+    url = (data.github_url or "").strip()
+    if url and ("/releases/" in url or "/commit/" in url):
+        return url
+    return f"https://github.com/{data.owner}/{data.repo}/releases/tag/{data.version_label}"
+
+
+def format_release_announcement_note(data: ReleaseAnnouncementInput) -> str:
+    """Kind 1 note body (legacy GitLurker multi-line layout for Nostr clients)."""
+    published = _format_published_at_utc(data.published_at_iso)
+    details_url = _announcement_details_url(data)
+    publisher = data.publisher or ""
+    return (
+        "\n"
+        "GitLurker spotted a new release for the following GitHub Project:\n"
+        "\n"
+        f"- Repository: {data.owner}/{data.repo}\n"
+        f"- Version: {data.version_label}\n"
+        f"- Published on: {published}\n"
+        f"- Published by: {publisher}\n"
+        "\n"
+        f"For more details, and the release notes, check out: {details_url}\n"
+        "\n"
+        "If you want to discover more freedom tech projects, and see who is shipping, "
+        f"check out {GITLURKER_PUBLIC_URL} \n"
+    )
+
+
 def build_release_announcement_builder(data: ReleaseAnnouncementInput) -> EventBuilder:
     """Kind 1 text note announcing a release/tag/commit."""
-    parts = [
-        f"{data.owner}/{data.repo}",
-        data.version_label,
-        data.published_at_iso,
-    ]
-    if data.publisher:
-        parts.append(data.publisher)
-    body = " — ".join(parts)
-    if data.github_url:
-        body = f"{body}\n{data.github_url}"
-    return EventBuilder.text_note(body)
+    return EventBuilder.text_note(format_release_announcement_note(data))
 
 
 def minimal_project_from_add(cmd: DmAddCommand) -> ProjectData:
@@ -460,7 +493,9 @@ __all__ = [
     "build_kind10003_builder",
     "kind10003_coordinate_count",
     "build_kind30078_builder",
+    "GITLURKER_PUBLIC_URL",
     "build_release_announcement_builder",
+    "format_release_announcement_note",
     "minimal_project_from_add",
     "project_d_tag",
     "project_data_from_kind30078_event",

@@ -47,6 +47,9 @@ describe("renderProjectTable", () => {
     expect(cells[1].textContent.trim()).toBe("demo");
     expect(cells[2].textContent.trim()).toBe("acme");
     expect(host.innerHTML).toContain("bc-icon");
+    const verA = cells[3].querySelector("a");
+    expect(verA?.getAttribute("data-spa")).toBe("1");
+    expect(verA?.getAttribute("href")).toBe("/acme/demo/release");
   });
 
   it("shows only subcategory icon when a category tab is selected", () => {
@@ -91,5 +94,9 @@ describe("renderProjectTable", () => {
     const cells = row?.querySelectorAll("td");
     expect(cells?.[3].textContent.trim()).toBe("Latest commit");
     expect(cells?.[4].textContent.trim()).toContain("2025-08-01");
+    const verLink = cells?.[3].querySelector("a");
+    expect(verLink?.getAttribute("data-spa")).toBeNull();
+    expect(verLink?.getAttribute("target")).toBe("_blank");
+    expect(verLink?.getAttribute("href")).toBe("https://github.com/acme/demo/commits");
   });
 });

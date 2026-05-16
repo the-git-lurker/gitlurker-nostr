@@ -165,7 +165,10 @@ def build_api_v1_router(settings: Settings, limiter: Limiter) -> APIRouter:
         if summary_r.stale:
             raise HTTPException(status_code=404, detail="Repository not found or moved")
         if summary_r.data is None:
-            raise HTTPException(status_code=502, detail="GitHub API error")
+            raise HTTPException(
+                status_code=503,
+                detail="GitHub temporarily unavailable; retry shortly",
+            )
         s = summary_r.data
         contrib_r = await gh.get_contributors(owner, repo)
         contributors: list[dict[str, Any]]
@@ -206,7 +209,10 @@ def build_api_v1_router(settings: Settings, limiter: Limiter) -> APIRouter:
         if summary.stale or summary.data is None:
             if summary.stale:
                 raise HTTPException(status_code=404, detail="Repository not found or moved")
-            raise HTTPException(status_code=502, detail="GitHub API error")
+            raise HTTPException(
+                status_code=503,
+                detail="GitHub temporarily unavailable; retry shortly",
+            )
         payload = await _release_payload(owner, repo, gh, nostr)
         if release_cache is not None:
             release_cache[ck] = payload

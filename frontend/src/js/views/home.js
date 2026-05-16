@@ -6,10 +6,12 @@ import { mountSearchBar } from "../components/searchBar.js";
 import {
   filterProjectsByCategory,
   filterProjectsBySearch,
+  filterProjectsBySubcategory,
 } from "../filters.js";
 import { resetMetaHome } from "../meta.js";
 import {
   categoryFilter,
+  subcategoryFilter,
   getProjects,
   initialRelayLoadComplete,
   loadingFromRelays,
@@ -50,7 +52,10 @@ export function renderHome(mainEl, navigate) {
     }
 
     const all = filterProjectsBySearch(
-      filterProjectsByCategory(getProjects(), categoryFilter),
+      filterProjectsBySubcategory(
+        filterProjectsByCategory(getProjects(), categoryFilter),
+        subcategoryFilter,
+      ),
       searchQuery,
     );
     if (!all.length) {

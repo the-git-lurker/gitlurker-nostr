@@ -27,6 +27,19 @@ function activityLabel(p) {
 }
 
 /**
+ * When the UI shows "Latest commit" we have no tag/release to render on /release — link to GitHub.
+ * @param {import('../parse.js').ParsedProject} p
+ */
+function versionCellIsLatestCommitPlaceholder(p) {
+  return activityLabel(p) === "Latest commit";
+}
+
+/** @param {string} owner @param {string} repo */
+function githubDefaultBranchCommitsUrl(owner, repo) {
+  return `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits`;
+}
+
+/**
  * @param {import('../parse.js').ParsedProject} p
  */
 function activityDateIso(p) {
@@ -140,11 +153,21 @@ export function renderProjectTable(container, projects, navigate, categoryFilter
       sV.textContent = activityLabel(p);
       verCell.appendChild(sV);
     } else {
-      const aV = document.createElement("a");
-      aV.href = `/${encodeURIComponent(p.owner)}/${encodeURIComponent(p.repo)}/release`;
-      aV.dataset.spa = "1";
-      aV.textContent = activityLabel(p);
-      verCell.appendChild(aV);
+      const label = activityLabel(p);
+      if (versionCellIsLatestCommitPlaceholder(p)) {
+        const ext = document.createElement("a");
+        ext.href = githubDefaultBranchCommitsUrl(p.owner, p.repo);
+        ext.target = "_blank";
+        ext.rel = "noopener noreferrer";
+        ext.textContent = label;
+        verCell.appendChild(ext);
+      } else {
+        const aV = document.createElement("a");
+        aV.href = `/${encodeURIComponent(p.owner)}/${encodeURIComponent(p.repo)}/release`;
+        aV.dataset.spa = "1";
+        aV.textContent = label;
+        verCell.appendChild(aV);
+      }
     }
 
     const dateCell = document.createElement("td");

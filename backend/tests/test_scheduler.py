@@ -38,7 +38,7 @@ def test_scheduler_budget_remaining() -> None:
 
 
 @pytest.mark.asyncio
-async def test_run_sweep_skips_when_hourly_budget_insufficient(
+async def test_run_sweep_defers_project_when_hourly_budget_too_low(
     monkeypatch: pytest.MonkeyPatch,
     isolate_backend_env: None,
 ) -> None:
@@ -57,6 +57,33 @@ async def test_run_sweep_skips_when_hourly_budget_insufficient(
 
     gh = MagicMock()
     gh.last_rate_limit_remaining = 9999
+    nostr = MagicMock()
+    nostr.tracked_coordinates = MagicMock(return_value=[coord])
+    nostr.fetch_project_data_snapshot = AsyncMock()
+
+    sched = RefreshScheduler(settings, gh, nostr, budget)
+    await sched.run_sweep_once()
+
+    nostr.fetch_project_data_snapshot.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_run_sweep_skips_when_github_rate_limit_critical(
+    monkeypatch: pytest.MonkeyPatch,
+    isolate_backend_env: None,
+) -> None:
+    keys = Keys.generate()
+    monkeypatch.setenv("AUTH_TOKEN", "t")
+    monkeypatch.setenv("LURKER_KEY", keys.secret_key().to_hex())
+    monkeypatch.setenv("NOSTR_RELAYS", "")
+    monkeypatch.setenv("NOSTR_PUBLISH_ENABLED", "false")
+    monkeypatch.setenv("GITLURKER_OPERATOR_PUBKEYS", "")
+    settings = Settings()
+
+    coord = Coordinate(KIND_PROJECT, keys.public_key(), project_d_tag("a", "b"))
+    budget = SchedulerBudget(4000)
+    gh = MagicMock()
+    gh.last_rate_limit_remaining = 15
     nostr = MagicMock()
     nostr.tracked_coordinates = MagicMock(return_value=[coord])
     nostr.fetch_project_data_snapshot = AsyncMock()

@@ -22,6 +22,14 @@ export function initTheme() {
   return initial;
 }
 
+function syncThemeToggleLabels() {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  const text = dark ? "Light" : "Dark";
+  document.querySelectorAll(".theme-toggle").forEach((el) => {
+    el.textContent = text;
+  });
+}
+
 /** @param {HTMLElement} container */
 export function mountThemeToggle(container) {
   initTheme();
@@ -30,12 +38,7 @@ export function mountThemeToggle(container) {
   btn.className = "btn theme-toggle";
   btn.setAttribute("aria-label", "Toggle color theme");
 
-  function label() {
-    const dark = document.documentElement.getAttribute("data-theme") === "dark";
-    btn.textContent = dark ? "Light" : "Dark";
-  }
-
-  label();
+  syncThemeToggleLabels();
   btn.addEventListener("click", () => {
     const cur = document.documentElement.getAttribute("data-theme");
     const next = cur === "dark" ? "light" : "dark";
@@ -45,7 +48,7 @@ export function mountThemeToggle(container) {
     } catch {
       /* ignore */
     }
-    label();
+    syncThemeToggleLabels();
   });
 
   container.appendChild(btn);

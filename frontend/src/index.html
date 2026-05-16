@@ -54,12 +54,37 @@
             />
             <span class="brand-title">GitLurker</span>
           </a>
-          <div class="nav-links">
+          <div class="nav-links nav-links--desktop">
             <a data-spa href="/">Home</a>
             <a data-spa href="/about">About</a>
           </div>
-          <div id="theme-slot" class="theme-slot"></div>
+          <div id="theme-slot" class="theme-slot theme-slot--desktop"></div>
+          <button
+            type="button"
+            id="nav-menu-btn"
+            class="nav-menu-btn"
+            aria-expanded="false"
+            aria-controls="mobile-nav-drawer"
+            aria-label="Open menu"
+          >
+            <span class="nav-menu-icon" aria-hidden="true"></span>
+          </button>
         </nav>
+        <div id="mobile-nav-drawer" class="mobile-nav-drawer" hidden>
+          <button
+            type="button"
+            class="mobile-nav-backdrop"
+            tabindex="-1"
+            aria-label="Close menu"
+          ></button>
+          <div class="mobile-nav-panel">
+            <div id="theme-slot-drawer" class="mobile-nav-theme"></div>
+            <nav class="mobile-nav-links" aria-label="Mobile">
+              <a data-spa href="/">Home</a>
+              <a data-spa href="/about">About</a>
+            </nav>
+          </div>
+        </div>
       </header>
 
       <main id="main-outlet" class="main-outlet"></main>

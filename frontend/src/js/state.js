@@ -6,6 +6,7 @@ const listeners = new Set();
 const projects = new Map();
 
 export let categoryFilter = "all";
+export let subcategoryFilter = "all";
 export let searchQuery = "";
 export let loadingFromRelays = true;
 export let initialRelayLoadComplete = false;
@@ -49,6 +50,11 @@ export function getProjects() {
 
 export function setCategoryFilter(cat) {
   categoryFilter = cat;
+  notify();
+}
+
+export function setSubcategoryFilter(sub) {
+  subcategoryFilter = sub;
   notify();
 }
 

@@ -3,9 +3,46 @@ import DOMPurify from "dompurify";
 import { updatePageMeta } from "../meta.js";
 import { escapeHtml } from "../utils.js";
 
+/** @param {number} ms */
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/**
+ * @param {string} owner
+ * @param {string} repo
+ * @param {{ maxAttempts?: number }} opts
+ */
+async function fetchReleaseWithRetry(owner, repo, opts = {}) {
+  const maxAttempts = opts.maxAttempts ?? 4;
+  const url = `/api/v1/release/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
+  let lastStatus = 0;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      const r = await fetch(url);
+      lastStatus = r.status;
+      if (r.ok) {
+        return await r.json();
+      }
+      const retryable = r.status === 502 || r.status === 503 || r.status === 504;
+      if (!retryable || attempt === maxAttempts - 1) {
+        return { _fetchError: r.status };
+      }
+    } catch {
+      if (attempt === maxAttempts - 1) {
+        return { _fetchError: "network" };
+      }
+    }
+    await sleep(350 * 2 ** attempt);
+  }
+  return { _fetchError: lastStatus || "unknown" };
+}
+
 /** @param {HTMLElement} mainEl @param {string} owner @param {string} repo @param {(path: string) => void} navigate */
 export async function renderRelease(mainEl, owner, repo, navigate) {
-  mainEl.innerHTML = "<p class=\"muted\">Loading...</p>";
+  mainEl.innerHTML = "<p class=\"muted\">Loading…</p>";
   const path = `/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/release`;
   updatePageMeta({
     title: `${owner}/${repo} release`,
@@ -13,18 +50,14 @@ export async function renderRelease(mainEl, owner, repo, navigate) {
     path,
   });
 
-  let data;
-  try {
-    const r = await fetch(
-      `/api/v1/release/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
-    );
-    if (!r.ok) {
-      mainEl.innerHTML = `<p class="banner banner-error">Could not load release (${r.status}).</p>`;
-      return;
-    }
-    data = await r.json();
-  } catch {
-    mainEl.innerHTML = `<p class="banner banner-error">Network error.</p>`;
+  const data = await fetchReleaseWithRetry(owner, repo);
+  if (data && typeof data._fetchError !== "undefined") {
+    const err = data._fetchError;
+    const hint =
+      err === 503 || err === 502 || err === 504
+        ? " GitHub may be slow; try again in a moment."
+        : "";
+    mainEl.innerHTML = `<p class="banner banner-error">Could not load release (${err}).${hint}</p>`;
     return;
   }
 

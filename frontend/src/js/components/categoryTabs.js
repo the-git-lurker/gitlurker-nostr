@@ -30,7 +30,8 @@ export function mountCategoryTabs(container) {
     btn.type = "button";
     btn.className = "tab";
     btn.dataset.cat = t.id;
-    btn.innerHTML = `${escapeHtml(t.label)} ${iconCategoryTab(t.id, t.label)}`;
+    btn.setAttribute("aria-label", t.label);
+    btn.innerHTML = `${iconCategoryTab(t.id, t.label)}<span class="tab-label">${escapeHtml(t.label)}</span>`;
     btn.addEventListener("click", () => setCategoryFilter(t.id));
     nav.appendChild(btn);
   }

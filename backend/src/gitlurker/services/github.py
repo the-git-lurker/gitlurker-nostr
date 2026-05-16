@@ -123,16 +123,28 @@ class GitHubService:
                     pass
             if self._on_request is not None:
                 self._on_request()
-            if response.status_code != 429:
-                return response
-            delay = await self._sleep_for_rate_limit(response)
-            logger.warning(
-                "GitHub 429; backing off %.1fs (attempt %s/%s)",
-                delay,
-                attempt + 1,
-                max_retries,
-            )
-            await asyncio.sleep(delay)
+            if response.status_code == 429:
+                delay = await self._sleep_for_rate_limit(response)
+                logger.warning(
+                    "GitHub 429; backing off %.1fs (attempt %s/%s)",
+                    delay,
+                    attempt + 1,
+                    max_retries,
+                )
+                await asyncio.sleep(delay)
+                continue
+            if response.status_code in (502, 503, 504) and attempt < max_retries - 1:
+                delay = min(0.5 * (2**attempt), 8.0)
+                logger.warning(
+                    "GitHub %s; retry in %.1fs (attempt %s/%s)",
+                    response.status_code,
+                    delay,
+                    attempt + 1,
+                    max_retries,
+                )
+                await asyncio.sleep(delay)
+                continue
+            return response
         assert last is not None
         return last
 
@@ -155,7 +167,7 @@ class GitHubService:
         return bool(full and full != expected)
 
     async def check_repo_stale(self, owner: str, repo: str) -> bool:
-        """True if the repo appears deleted, moved, or renamed."""
+        """True if the repo appears deleted, moved, or renamed (FR-29)."""
         r0 = await self._repo_root_response(owner, repo, follow_redirects=False)
         if r0.status_code in (301, 302, 307, 308):
             return True

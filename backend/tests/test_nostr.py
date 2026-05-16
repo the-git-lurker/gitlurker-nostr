@@ -17,11 +17,13 @@ from gitlurker.models.schemas import (
     parse_dm_command_v1,
 )
 from gitlurker.services.nostr import (
+    GITLURKER_PUBLIC_URL,
     KIND_PROJECT,
     NostrService,
     build_kind10003_builder,
     build_kind30078_builder,
     build_release_announcement_builder,
+    format_release_announcement_note,
     kind10003_coordinate_count,
     project_d_tag,
     project_data_from_kind30078_event,
@@ -154,11 +156,33 @@ async def test_release_announcement_builder_kind() -> None:
         version_label="v1",
         published_at_iso="2024-01-01",
         publisher="alice",
-        github_url="https://github.com/o/r/releases/v1",
+        github_url="https://github.com/o/r/releases/tag/v1",
     )
     ev = await build_release_announcement_builder(data).sign(signer)
     assert ev.kind().as_u16() == 1
-    assert "o/r" in ev.content()
+    body = ev.content()
+    assert "GitLurker spotted a new release" in body
+    assert "- Repository: o/r" in body
+    assert "- Version: v1" in body
+    assert "- Published on: 2024-01-01 UTC" in body
+    assert "- Published by: alice" in body
+    assert "releases/tag/v1" in body
+    assert GITLURKER_PUBLIC_URL in body
+    assert " — " not in body
+
+
+def test_format_release_announcement_note_commit_url() -> None:
+    data = ReleaseAnnouncementInput(
+        owner="o",
+        repo="r",
+        version_label="abc1234",
+        published_at_iso="2025-06-15T12:00:00Z",
+        publisher="dev",
+        github_url="https://github.com/o/r/commit/abcdef1234567890",
+    )
+    body = format_release_announcement_note(data)
+    assert "https://github.com/o/r/commit/abcdef1234567890" in body
+    assert GITLURKER_PUBLIC_URL in body
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,6 @@
 import { loadWasmAsync } from "@rust-nostr/nostr-sdk";
 
+import { closeMobileNav, mountMobileNav } from "./components/mobileNav.js";
 import { mountThemeToggle, initTheme } from "./components/themeToggle.js";
 import { updatePageMeta } from "./meta.js";
 import { initNostr } from "./nostr.js";
@@ -97,6 +98,7 @@ function bindGlobalNav() {
     if (!href || href.startsWith("http")) return;
     ev.preventDefault();
     navigate(href);
+    closeMobileNav();
   });
 }
 
@@ -125,6 +127,7 @@ async function main() {
   initTheme();
   const themeSlot = document.getElementById("theme-slot");
   if (themeSlot) mountThemeToggle(themeSlot);
+  mountMobileNav();
 
   bindGlobalNav();
   window.addEventListener("popstate", handleRoute);

@@ -1,4 +1,4 @@
-"""Background refresh: GitHub → Kind 30078 / Kind 1 with scheduler rate budget."""
+"""Background refresh: GitHub → Kind 30078 / Kind 1 with scheduler rate budget (NFR-10)."""
 
 from __future__ import annotations
 
@@ -20,7 +20,8 @@ logger = logging.getLogger(__name__)
 
 # Conservative GitHub REST calls per tracked repo per sweep (stale checks + summary + mode).
 _ESTIMATED_REQUESTS_PER_PROJECT = 8
-_SAFETY_MARGIN_REM = 120
+# Skip a sweep only when GitHub's remaining quota is critically low (not per full fleet size).
+_CRITICAL_GITHUB_RATE_REMAINING = 20
 
 
 def _fields_from_latest_commit(c: CommitData) -> dict[str, Any]:
@@ -181,26 +182,29 @@ class RefreshScheduler:
         self._budget = budget
         self._sem = asyncio.Semaphore(settings.github_max_concurrent_requests)
 
-    def _should_skip_sweep(self, num_projects: int) -> bool:
-        est = num_projects * _ESTIMATED_REQUESTS_PER_PROJECT
-        if self._budget.remaining() < est:
-            logger.warning(
-                "Scheduler skipping sweep: hourly budget low (%s < %s)",
-                self._budget.remaining(),
-                est,
-            )
-            return True
+    def _should_skip_sweep(self) -> bool:
+        """Avoid hammering GitHub when the hourly token budget is exhausted.
+
+        Per-repo refreshes also defer when :attr:`SchedulerBudget` is empty. We no longer
+        skip the whole sweep just because ``N * estimated_calls`` exceeds the hourly cap:
+        that prevented *any* updates for large Kind 10003 lists.
+        """
         rem = self._github.last_rate_limit_remaining
-        if rem is not None and rem < est + _SAFETY_MARGIN_REM:
+        if rem is not None and rem < _CRITICAL_GITHUB_RATE_REMAINING:
             logger.warning(
-                "Scheduler skipping sweep: X-RateLimit-Remaining too low (%s < %s)",
+                "Scheduler skipping sweep: X-RateLimit-Remaining critically low (%s)",
                 rem,
-                est + _SAFETY_MARGIN_REM,
             )
             return True
         return False
 
     async def run_forever(self) -> None:
+        try:
+            await self.run_sweep_once()
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.exception("Initial refresh sweep failed")
         while True:
             await asyncio.sleep(self._settings.refresh_interval_seconds)
             try:
@@ -215,7 +219,7 @@ class RefreshScheduler:
         if not coords:
             logger.debug("No tracked projects; sweep idle")
             return
-        if self._should_skip_sweep(len(coords)):
+        if self._should_skip_sweep():
             return
         tasks = [self._refresh_wrapped(c) for c in coords]
         await asyncio.gather(*tasks)
@@ -234,8 +238,12 @@ class RefreshScheduler:
         if parsed is None:
             return
         owner, repo = parsed
-        if self._budget.remaining() <= 0:
-            logger.warning("Hourly scheduler budget exhausted; deferring %s/%s", owner, repo)
+        if self._budget.remaining() < _ESTIMATED_REQUESTS_PER_PROJECT:
+            logger.debug(
+                "Scheduler hourly budget too low for a full refresh; deferring %s/%s",
+                owner,
+                repo,
+            )
             return
 
         base = await self._nostr.fetch_project_data_snapshot(owner, repo)
@@ -280,35 +288,36 @@ def _version_key(p: ProjectData, mode: str) -> str:
 
 def _announcement_from_project(p: ProjectData, mode: str) -> ReleaseAnnouncementInput | None:
     if mode == "release" and p.release_version:
+        ver = p.release_version
         return ReleaseAnnouncementInput(
             owner=p.owner,
             repo=p.repo,
-            version_label=p.release_version,
+            version_label=ver,
             published_at_iso=p.release_date_iso or "",
             publisher="",
-            github_url=p.web or f"https://github.com/{p.owner}/{p.repo}",
+            github_url=f"https://github.com/{p.owner}/{p.repo}/releases/tag/{ver}",
         )
     if mode == "tag" and p.tag_name:
+        tag = p.tag_name
         return ReleaseAnnouncementInput(
             owner=p.owner,
             repo=p.repo,
-            version_label=p.tag_name,
+            version_label=tag,
             published_at_iso=p.tag_date_iso or "",
             publisher="",
-            github_url=p.web or f"https://github.com/{p.owner}/{p.repo}",
+            github_url=f"https://github.com/{p.owner}/{p.repo}/releases/tag/{tag}",
         )
-    
-    ## Currently commented out due to potential noise from commit-based tracking; can be re-enabled if desired.
-    # if mode == "commit" and p.commit_sha:
-    #     short = p.commit_sha[:7] if len(p.commit_sha) >= 7 else p.commit_sha
-    #     return ReleaseAnnouncementInput(
-    #         owner=p.owner,
-    #         repo=p.repo,
-    #         version_label=short,
-    #         published_at_iso=p.commit_date_iso or "",
-    #         publisher=p.commit_author or "",
-    #         github_url=p.web or f"https://github.com/{p.owner}/{p.repo}",
-    #     )
+    if mode == "commit" and p.commit_sha:
+        sha = p.commit_sha
+        short = sha[:7] if len(sha) >= 7 else sha
+        return ReleaseAnnouncementInput(
+            owner=p.owner,
+            repo=p.repo,
+            version_label=short,
+            published_at_iso=p.commit_date_iso or "",
+            publisher=p.commit_author or "",
+            github_url=f"https://github.com/{p.owner}/{p.repo}/commit/{sha}",
+        )
     return None
 
 
